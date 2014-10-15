@@ -20,13 +20,36 @@ things [list, area or project name] [help|open|show] [add|check|uncheck|cancel|d
 
 `things listname show`: show the list, area or project named `listname` in Things
 
+###list output###
+The result of a things command will look like this:
+
+```
+> things 'Things CLI Tool'
+Things: project Things CLI Tool
+*√ flag item as Today
+ √ uncheck an item
+ √ add an item
+ √ check an item
+ √ cancel an item
+ √ delete an item
+ - tag an item
+ - read tags of an item
+*- upload to github
+```
+
+The first line is show the name of the list, area or project the command was working on.
+
+Then the tool will list the items. Completed items have a `√` and open (not completed) items have a `-`. Canceled items have an `x`.
+
+Items marked for 'Today' will also have an asterisk `*`.
+
 ### adding items###
 
 `things add` or `things new`: opens the quick entry panel
 
-` things add new todo item`: adds a new item named `new todo item` to the Inbox
+` things add todo item`: adds a new item named `todo item` to the Inbox
 
-`things listname add new todo item`: adds a new item named `new todo item` to the list, area or project named `listname`
+`things listname add todo item`: adds a new item named `todo item` to the list, area or project named `listname`
 
 ### checking items###
 
@@ -58,23 +81,4 @@ things [list, area or project name] [help|open|show] [add|check|uncheck|cancel|d
 ###other commands###
 
 `things help`: shows usage
-
-
-
-
-
-
-
-
-
-
-things check “todo”
-
-marks the first item whose name starts with “todo” in the “Today” list as completed
-
-
-things delete “todo”
-
-deletes the first  item whose name starts with “todo” in the Today list
-
 
