@@ -45,19 +45,19 @@ on formattodo(t)
 		else
 			set tickmark to "x️"
 		end if
-		
+
 		if my todoisinlist(t, list "Today") then
 		    set today to "*"
 		else
 		    set today to space
 	    end
-		
+
 		set output to today & tickmark & space & name of t
-		
+
 		if class of t is project then
 			set output to output & space & "(" & (count of to dos of t) & ")"
 		end
-		
+
 		return output
 	end tell
 end formattodo
@@ -72,11 +72,11 @@ end
 on listTodos(listname)
 	tell application "Things"
 		set target to my getlistwithname(listname)
-		
+
 		if target is missing value then
 			return "cannot find list named '" & listname & "'"
 		end if
-		
+
 		(*if (name of every area) contains listname then
 		    set target to area listname
 		    set listtype to "Area"
@@ -89,12 +89,12 @@ on listTodos(listname)
 		else
 		    return "cannot find list or project '"&listname&"'"
 		end*)
-		
+
 		set output to "Things: " & my formatlist(target) & newline
-		
+
 		if count of to dos of target is greater than 0 then
             repeat with x in (every to do of target)
-                if not my todoisinlist(x, list "Trash") then
+                if not (my todoisinlist(x, list "Trash") or my todoisinlist(x, list "Logbook")) then
                     set output to output & my formattodo(x) & newline
                 end
             end repeat
@@ -111,9 +111,9 @@ on addTodoToList(t, l)
         if target is missing value then
             return "cannot find list or project '"&listname&"'"
         end
-        
+
         make new to do with properties {name: t} at target
-        
+
         my listTodos(l)
     end
 end
@@ -121,13 +121,13 @@ end
 on setTodoStatusOnList(t, s, l)
     tell application "Things"
         set target to my getlistwithname(l)
-        
+
         if target is missing value then
             return "cannot find list or project '"&listname&"'"
         end
-        
+
         set the_items to every to do of target whose name starts with t
-        
+
         if count of the_items is greater than 0 then
             set x to first to do of target whose name starts with t
             if s is "completed" then
@@ -148,13 +148,13 @@ end
 on deleteTodoOnList(t, l)
     tell application "Things"
         set target to my getlistwithname(l)
-        
+
         if target is missing value then
             return "cannot find list or project '"&listname&"'"
         end
-        
+
         set the_items to every to do of target whose name starts with t
-        
+
         if count of the_items is greater than 0 then
             delete first to do of target whose name starts with t
             return my listTodos(l)
@@ -166,7 +166,7 @@ end
 
 on moveTo(t, sourcelistname, destlistname)
     tell application "Things"
-        set sourcelist to my getlistwithname(sourcelistname)        
+        set sourcelist to my getlistwithname(sourcelistname)
         if sourcelist is missing value then
             return "cannot find list or project '"&sourcelistname&"'"
         end
@@ -175,9 +175,9 @@ on moveTo(t, sourcelistname, destlistname)
         if destlist is missing value then
             return "cannot find list or project '"&destlistname&"'"
         end
-        
+
         set the_items to every to do of sourcelist whose name starts with t
-        
+
         if count of the_items is greater than 0 then
             move first to do of sourcelist whose name starts with t to destlist
             return my listTodos(sourcelistname)
@@ -190,21 +190,21 @@ end
 
 on run argv
     set modifyverbs to {"add", "check", "uncheck", "cancel", "delete", "today", "next", "defer"}
-    
+
 	if (count of argv) is 0 then -- no arguments, show Today list
 		return my listTodos("Today")
 	end if
-	
+
 	copy item 1 of argv to arg1
 
 	if (count of argv) is 1 then
-		
+
 		-- help
 		if arg1 is in {"help", "-h", "-help", "--help"} then
 			return "things Command Line Tool: an CLI interface to the GTD app Things" & newline & ¬
 				"usage: things [list, area or project name] [help|open|show] [add|check|uncheck|cancel|delete|today|next|defer itemname]"
 		end if
-		
+
 		-- if that one argument is open, activate the application
 		if arg1 is in {"open", "show"} then
 			tell application "Things"
@@ -213,21 +213,21 @@ on run argv
 			end tell
 			return
 		end if
-		
+
 		-- add with out other args, open quick entry panel
 		if arg1 is in {"add", "new"} then
 		    tell app "Things" to show quick entry panel
 		    return
 		end
-		
+
 		-- interpret argument 1 as list name
 		return my listTodos(arg1)
 	end if
-	
+
     copy item 2 of argv to arg2
 
 	if (count of argv) is 2 then -- verb with no list name, assume default targets
-	    
+
 	    if arg1 is in modifyverbs then
 	        if arg1 is "add" then
 	            -- default target for add is "Inbox"
@@ -250,9 +250,9 @@ on run argv
 	        else if arg1 is in {"next", "defer"} then
 	            -- default target for today is "Today", so do nothing
 	            return my moveTo(arg2, "Today", "Next")
-	        end 
+	        end
 	    end
-	    
+
 	    if arg2 is in {"open", "show"} then
             set target to my getlistwithname(arg1)
 	        tell application "Things"
@@ -264,18 +264,18 @@ on run argv
 	        return "do not understand '" & arg2 & "'"
 	    end
 	end
-	
-	
+
+
 	copy item 3 of argv to arg3
-	
+
 	if count of argv is greater than 3 then
 	    -- merge all following arguments
 	    repeat with x in items 4 through -1 of argv
 	        set arg3 to arg3 & space & x
 	    end
 	end
-	
-	if (count of argv) is greater than 2 then 
+
+	if (count of argv) is greater than 2 then
 	    if arg2 is in modifyverbs then
 	        if arg2 is "add" then
 	            return my addTodoToList(arg3, arg1)
@@ -291,11 +291,11 @@ on run argv
 	            return my moveto(arg3, arg1, "Today")
 	        else if arg2 is in {"next", "defer"} then
 	            return my moveTo(arg3, arg1, "Next")
-	        end 
+	        end
 	    else
 	        return "do not understand '" & arg2 & "'"
 	    end
-	    
-	
+
+
 	end
 end run
