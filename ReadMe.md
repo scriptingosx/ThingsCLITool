@@ -83,5 +83,6 @@ Items marked for 'Today' will also have an asterisk `*`.
 `things help`: shows usage
 
 ## installation##
+
 The things script obviously requires the Things app to be setup and running. It will be happy anywhere in your `$PATH`, or alternatively you can clone the project anywhere and put a symlink in `/usr/local/bin` or elsewhere in your `$PATH`.
 
